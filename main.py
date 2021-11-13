@@ -72,8 +72,8 @@ def update_bacterias_mushrooms():
             if grid[x][y][0] == BACTERIA:
                 grid[x][y][1] += BACTERIA_GROWTH
 
-            elif grid[x][y][0] == MUSHROOM:
-                grid[x][y][1] += MUSHROOM_GROWTH
+            elif grid[x][y][0] == MUSHROOMS:
+                grid[x][y][1] += MUSHROOMS_GROWTH
 
     for x in range(TILE_NUMBER_X):
         for y in range(TILE_NUMBER_Y):
@@ -89,14 +89,14 @@ def update_bacterias_mushrooms():
                             grid[spawn[0]][spawn[1]][0] = BACTERIA
                             grid[spawn[0]][spawn[1]][1] = BACTERIA_SPAWN_VALUE
 
-            if grid[x][y][0] == MUSHROOM and grid[x][y][1] > MUSHROOM_REPRODUCTION_THRESHOLD and not grid[x][y][2]:
+            if grid[x][y][0] == MUSHROOMS and grid[x][y][1] > MUSHROOMS_REPRODUCTION_THRESHOLD and not grid[x][y][2]:
                 for spawn in (
                         (random.randint(0, TILE_NUMBER_X - 1), random.randint(0, TILE_NUMBER_Y - 1))
-                        for _ in range(MUSHROOM_SPORE_NUMBER)
+                        for _ in range(MUSHROOMS_SPORE_NUMBER)
                 ):
                     if grid[spawn[0]][spawn[1]][0] == GROUND:
-                        grid[spawn[0]][spawn[1]][0] = MUSHROOM
-                        grid[spawn[0]][spawn[1]][1] = MUSHROOM_SPAWN_VALUE
+                        grid[spawn[0]][spawn[1]][0] = MUSHROOMS
+                        grid[spawn[0]][spawn[1]][1] = MUSHROOMS_SPAWN_VALUE
                         grid[spawn[0]][spawn[1]].append(False)
                 grid[x][y][2] = True
 
@@ -117,7 +117,7 @@ def update_screen():
                 color = (intensity, floor(intensity / 2), 0)
             elif grid[x][y][0] == BACTERIA:
                 color = (0, intensity, 0)
-            elif grid[x][y][0] == MUSHROOM:
+            elif grid[x][y][0] == MUSHROOMS:
                 color = (0, 0, intensity)
 
             if selected_tile == (x, y):
@@ -182,12 +182,12 @@ def check_game_won():
 
     for x in range(TILE_NUMBER_X):
         for y in range(TILE_NUMBER_Y):
-            if grid[x][y][0] == 1:
+            if grid[x][y][0] == PLAYER1:
                 player1_value += grid[x][y][1]
-            elif grid[x][y][0] == 2:
+            elif grid[x][y][0] == PLAYER2:
                 player2_value += grid[x][y][1]
             else:
-                still_food = still_food or grid[x][y][0] in (3, 4)
+                still_food = still_food or grid[x][y][0] in (BACTERIA, MUSHROOMS)
 
     if not still_food:
         pygame.quit()
