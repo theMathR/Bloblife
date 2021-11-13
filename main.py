@@ -141,7 +141,7 @@ def update_screen():
             window.blit(tile, (x * TILE_SIZE, y * TILE_SIZE))
 
     for movement in blob_movements.keys():
-        intensity = int(blob_movements[movement] * 127 / (grid[movement[0][0]][movement[0][1]][1] + 1) + 127)
+        intensity = int(blob_movements[movement] * 127 / MAX_VALUE + 127)
 
         if movement[0][0] > movement[1][0]:
             arrow = create_arrow("left", intensity)
