@@ -1,4 +1,4 @@
-TITLE = "Mold slime fight"
+TITLE = "Slime mold fight"
 
 TILE_SIZE = 40
 TILE_NUMBER_X = 25
