@@ -234,8 +234,6 @@ while True:
                 ):
                     move_blob(selected_tile, clicked_tile)
 
-                    selected_tile = UNSELECTED
-
                 elif grid[clicked_tile[0]][clicked_tile[1]][0] == turn:
                     selected_tile = clicked_tile
 
