@@ -52,16 +52,14 @@ def create_arrow(direction, intensity):
 def update_blobs():
     global blob_movements
 
-    for movement in blob_movements.keys():
-        grid[movement[0][0]][movement[0][1]][1] -= blob_movements[movement] + MOVEMENT_COST
-        if grid[movement[0][0]][movement[0][1]][1] == GROUND:
-            grid[movement[0][0]][movement[0][1]][0] = 0
-
-        grid[movement[1][0]][movement[1][1]][1] += blob_movements[movement]
-        grid[movement[1][0]][movement[1][1]][0] = turn
-
-        if len(grid[movement[1][0]][movement[1][1]]) > 2:
-            del grid[movement[1][0]][movement[1][1]][2]
+    for from_ in blob_movements.keys():
+        grid[from_[0]][from_[1]][1] -= MOVEMENT_COST
+        for to in blob_movements[from_].keys():
+            grid[from_[0]][from_[1]][1] -= blob_movements[from_][to]
+            if grid[from_[0]][from_[1]][1] == 0:
+                grid[from_[0]][from_[1]][0] = GROUND
+            grid[to[0]][to[1]][1] += blob_movements[from_][to]
+            grid[to[0]][to[1]][0] = turn
 
     blob_movements = {}
 
@@ -109,7 +107,7 @@ def update_screen():
             if grid[x][y][1] > MAX_VALUE:
                 grid[x][y][1] = MAX_VALUE
 
-            intensity = int(grid[x][y][1] * 127 / MAX_VALUE + 127)
+            intensity = floor(grid[x][y][1] * 127 / MAX_VALUE + 127)
 
             if grid[x][y][0] == PLAYER1:
                 color = (intensity, intensity, 0)
@@ -140,39 +138,51 @@ def update_screen():
 
             window.blit(tile, (x * TILE_SIZE, y * TILE_SIZE))
 
-    for movement in blob_movements.keys():
-        intensity = int(blob_movements[movement] * 127 / MAX_VALUE + 127)
+    for from_ in blob_movements.keys():
+        for to in blob_movements[from_].keys():
+            movement = (from_, to)
 
-        if movement[0][0] > movement[1][0]:
-            arrow = create_arrow("left", intensity)
-        elif movement[0][0] < movement[1][0]:
-            arrow = create_arrow("right", intensity)
-        elif movement[0][1] > movement[1][1]:
-            arrow = create_arrow("up", intensity)
-        elif movement[0][1] < movement[1][1]:
-            arrow = create_arrow("down", intensity)
+            intensity = floor(blob_movements[from_][to] * 127 / MAX_VALUE + 127)
 
-        window.blit(arrow, (min(movement[0][0], movement[1][0]) * TILE_SIZE,
-                            min(movement[0][1], movement[1][1]) * TILE_SIZE))
+            arrow = 0
+            if movement[0][0] > movement[1][0]:
+                arrow = create_arrow("left", intensity)
+            elif movement[0][0] < movement[1][0]:
+                arrow = create_arrow("right", intensity)
+            elif movement[0][1] > movement[1][1]:
+                arrow = create_arrow("up", intensity)
+            elif movement[0][1] < movement[1][1]:
+                arrow = create_arrow("down", intensity)
+
+            window.blit(arrow, (min(movement[0][0], movement[1][0]) * TILE_SIZE,
+                                min(movement[0][1], movement[1][1]) * TILE_SIZE))
 
     pygame.display.update()
 
 
 def move_blob(from_, to):
-    if (to, from_) in blob_movements.keys():
-        blob_movements[(to, from_)] -= 1
-        if blob_movements[(to, from_)] == 0:
-            del blob_movements[(to, from_)]
-        return
+    if to in blob_movements.keys():
+        if from_ in blob_movements[to].keys():
+            blob_movements[to][from_] -= 1
+            if blob_movements[to][from_] == 0:
+                del blob_movements[to][from_]
+            return
 
-    if (from_, to) in blob_movements.keys():
-        if blob_movements[(from_, to)] + MOVEMENT_COST < grid[from_[0]][from_[1]][1]:
-            blob_movements[(from_, to)] += 1
+    if from_ in blob_movements.keys():
+        total_movement = MOVEMENT_COST
+        for destination in blob_movements[from_].keys():
+            total_movement += blob_movements[from_][destination]
+
+        if total_movement < grid[from_[0]][from_[1]][1]:
+            if to in blob_movements[from_].keys():
+                blob_movements[from_][to] += 1
+            else:
+                blob_movements[from_][to] = 1
         else:
-            del blob_movements[(from_, to)]
-        return
-
-    blob_movements[(from_, to)] = 1
+            if to in blob_movements[from_].keys():
+                del blob_movements[from_][to]
+    else:
+        blob_movements[from_] = {to: 1}
 
 
 def check_game_won():
@@ -225,6 +235,7 @@ while True:
             if pygame.mouse.get_pressed()[0]:
                 clicked_tile = (
                     floor(pygame.mouse.get_pos()[0] / TILE_SIZE), floor(pygame.mouse.get_pos()[1] / TILE_SIZE))
+                print("value:", grid[clicked_tile[0]][clicked_tile[1]][1])
 
                 if clicked_tile in (
                         (selected_tile[0] + 1, selected_tile[1]),

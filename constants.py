@@ -49,5 +49,10 @@ grid[22][15] = [PLAYER2, 8]
 grid[23][15] = [PLAYER2, 4]
 
 grid[1][2] = [BACTERIA, 2]
+grid[7][8] = [BACTERIA, 6]
+grid[23][5] = [BACTERIA, 1]
+grid[8][20] = [BACTERIA, 13]
+grid[12][18] = [BACTERIA, 7]
 
 grid[23][23] = [MUSHROOMS, 2, False]
+grid[11][21] = [MUSHROOMS, 3, False]
