@@ -16,12 +16,19 @@ turn = PLAYER1
 
 selected_tile = UNSELECTED
 
+number_mode = False
+
 blob_movements = {}
 
+font = pygame.font.Font(None, FONT_SIZE)
 
-def create_arrow(direction, intensity):
+
+def create_arrow(direction, movement):
+    intensity = floor(movement * 127 / MAX_VALUE + 127)
+
     if direction in ("left", "right"):
         arrow = pygame.Surface((TILE_SIZE * 2, TILE_SIZE))
+
         pygame.draw.line(arrow, (intensity, 0, 0), (TILE_SIZE / 2, TILE_SIZE / 2), (TILE_SIZE * 1.5, TILE_SIZE / 2),
                          ARROW_WIDTH)
         if direction == "left":
@@ -34,6 +41,7 @@ def create_arrow(direction, intensity):
                                                                 (TILE_SIZE * 1.25, TILE_SIZE * 3 / 4)), ARROW_WIDTH)
     else:
         arrow = pygame.Surface((TILE_SIZE, TILE_SIZE * 2))
+
         pygame.draw.line(arrow, (intensity, 0, 0), (TILE_SIZE / 2, TILE_SIZE / 2), (TILE_SIZE / 2, TILE_SIZE * 1.5),
                          ARROW_WIDTH)
         if direction == "up":
@@ -44,7 +52,6 @@ def create_arrow(direction, intensity):
             pygame.draw.lines(arrow, (intensity, 0, 0), False, ((TILE_SIZE / 4, TILE_SIZE * 1.25),
                                                                 (TILE_SIZE / 2, TILE_SIZE * 1.5),
                                                                 (TILE_SIZE * 3 / 4, TILE_SIZE * 1.25)), ARROW_WIDTH)
-
     arrow.set_colorkey((0, 0, 0))
     return arrow
 
@@ -145,20 +152,29 @@ def update_screen():
         for to in blob_movements[from_].keys():
             movement = (from_, to)
 
-            intensity = floor(blob_movements[from_][to] * 127 / MAX_VALUE + 127)
-
             arrow = 0
             if movement[0][0] > movement[1][0]:
-                arrow = create_arrow("left", intensity)
+                arrow = create_arrow("left", blob_movements[from_][to])
             elif movement[0][0] < movement[1][0]:
-                arrow = create_arrow("right", intensity)
+                arrow = create_arrow("right", blob_movements[from_][to])
             elif movement[0][1] > movement[1][1]:
-                arrow = create_arrow("up", intensity)
+                arrow = create_arrow("up", blob_movements[from_][to])
             elif movement[0][1] < movement[1][1]:
-                arrow = create_arrow("down", intensity)
+                arrow = create_arrow("down", blob_movements[from_][to])
 
             window.blit(arrow, (min(movement[0][0], movement[1][0]) * TILE_SIZE,
                                 min(movement[0][1], movement[1][1]) * TILE_SIZE))
+
+    if number_mode:
+        for x in range(TILE_NUMBER_X):
+            for y in range(TILE_NUMBER_Y):
+                number = str(grid[x][y][1])
+                if number == "0":
+                    continue
+
+                text = font.render(number, False, FONT_COLOR)
+
+                window.blit(text, (x * TILE_SIZE, y * TILE_SIZE))
 
     pygame.display.update()
 
@@ -238,7 +254,6 @@ while True:
             if pygame.mouse.get_pressed()[0]:
                 clicked_tile = (
                     floor(pygame.mouse.get_pos()[0] / TILE_SIZE), floor(pygame.mouse.get_pos()[1] / TILE_SIZE))
-                print("value:", grid[clicked_tile[0]][clicked_tile[1]][1])
 
                 if clicked_tile in (
                         (selected_tile[0] + 1, selected_tile[1]),
@@ -268,3 +283,7 @@ while True:
                 turn += 1
                 if turn == 3:
                     turn = 1
+
+            elif event.key == K_SPACE:
+                number_mode = not number_mode
+                update_screen()
