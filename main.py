@@ -54,12 +54,15 @@ def update_blobs():
 
     for from_ in blob_movements.keys():
         grid[from_[0]][from_[1]][1] -= MOVEMENT_COST
-        for to in blob_movements[from_].keys():
-            grid[from_[0]][from_[1]][1] -= blob_movements[from_][to]
-            if grid[from_[0]][from_[1]][1] == 0:
-                grid[from_[0]][from_[1]][0] = GROUND
-            grid[to[0]][to[1]][1] += blob_movements[from_][to]
-            grid[to[0]][to[1]][0] = turn
+        if grid[from_[0]][from_[1]][1] > 0:
+            for to in blob_movements[from_].keys():
+                grid[from_[0]][from_[1]][1] -= blob_movements[from_][to]
+                if grid[from_[0]][from_[1]][1] == 0:
+                    grid[from_[0]][from_[1]][0] = GROUND
+                grid[to[0]][to[1]][1] += blob_movements[from_][to]
+                grid[to[0]][to[1]][0] = turn
+        else:
+            grid[from_[0]][from_[1]][0] = GROUND
 
     blob_movements = {}
 
