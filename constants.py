@@ -1,4 +1,4 @@
-TITLE = "Slime mold fight"
+TITLE = "Bloblife"
 
 TILE_SIZE = 40
 TILE_NUMBER_X = 25
