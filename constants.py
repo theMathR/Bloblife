@@ -1,4 +1,5 @@
 TITLE = "Bloblife"
+ICON = "icon.png"
 
 TILE_SIZE = 40
 TILE_NUMBER_X = 25

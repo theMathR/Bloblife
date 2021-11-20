@@ -9,6 +9,9 @@ pygame.init()
 window = pygame.display.set_mode((TILE_NUMBER_X * TILE_SIZE, TILE_NUMBER_Y * TILE_SIZE))
 pygame.display.set_caption(TITLE)
 
+icon = pygame.image.load(ICON)
+pygame.display.set_icon(icon)
+
 tile = pygame.Surface((TILE_SIZE, TILE_SIZE))
 mini_tile = pygame.Surface((TILE_SIZE * DUCKS, TILE_SIZE * DUCKS))
 
